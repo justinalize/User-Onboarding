@@ -1,113 +1,85 @@
-import React, { useState, useEffect } from 'react'
-import axios from 'axios'
-import Form from './Form'
-import * as yup from 'yup'
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import Form from "./Form";
 import schema from "./formSchema";
+import * as yup from "yup";
 import Person from './Person'
 
+const initialFormValues = { name: "", email: "", password: "", terms: false };
+const initialFormErrors = { name: "", email: "", password: "" };
 
-const InitialFormValues = {
-  // text input
-name: '',
-email: '',
-password:'',
-// checkbox
-tos:'', // terms of service
-}
+export default function App() {
 
-const InitialFormErrors = {
-  name:'',
-  email:'',
-  password:'',
-}
-const initialPeople = []
-const initialDisabled = true;
+  const [users, setUsers] = useState([]);
+  const [formValues, setFormValues] = useState(initialFormValues);
+  const [formErrors, setFormErrors] = useState(initialFormErrors);
+  const [disabled, setDisabled] = useState(true);
 
 
-
-
-export default function App(){
-
-
-const [people, setPeople] = useState(initialPeople) // will be thre array that holds everyone
-const [formValues, setFormValues] = useState(InitialFormValues) // the object of starting values
-const {errors, setErrors} = useState(InitialFormErrors) // object with errors 
-const [disabled, setDisabled] = useState(initialDisabled) // boolean about whether the button is disabled or not
-
-
-const postNewPerson = (newPerson) => {
-  axios
-  .post('https://reqres.in/api/users', newPerson )
-  .then(response => {
-    setPeople([response.data, ...people])
-    setFormValues(InitialFormValues)
-    console.log(response)
-  })
-  .catch(error => {
-    debugger
-  })
-}
-
-const inputChange = (name, value) => {
-  yup
-    .reach(schema, name) 
-    .validate(value) 
-    .then(() => {
-  
-      setErrors({
-        ...errors,
-        [name]: "",
+  const postNewUser = (newUser) => {
+    axios
+     
+      .post("https://reqres.in/api/users", newUser)
+      .then(response => {
+        setUsers([response.data, ...users]);
+        setFormValues(initialFormValues);
+      })
+      .catch(error => {
+        console.log(error);
+        debugger;
       });
-    })
-
-    .catch((error) => {
-      setErrors({
-        
-        [name]: error.errors[0],
-      });
-    });
-
-  setFormValues({
-    ...formValues,
-    [name]: value, 
-  });
-};
-
-const formSubmit = () => {
-  const newPerson = {
-    name: formValues.name.trim(),
-    email: formValues.email.trim(),
-    password: formValues.password.trim(),
-    tos: ["agree", "decline"].filter(
-      (terms) => formValues[terms]
-    ),
   };
- 
-  postNewPerson(newPerson);
-};
 
-useEffect(() => {
-  schema.isValid(formValues).then((valid) => {
-    setDisabled(!valid);
-  });
-}, [formValues]);
+  const inputChange = (name, value) => {
+    yup
+      .reach(schema, name)
+      .validate(value)
+      .then(() => {
+        setFormErrors({
+          ...formErrors,
+          [name]: "",
+        });
+      })
+      .catch(error => {
+        setFormErrors({
+          ...formErrors,
+          [name]: error.errors[0],
+        });
+      });
+    setFormValues({
+      ...formValues,
+      [name]: value,
+    });
+  };
+  const formSubmit = () => {
+    const newUser = {
+      name: formValues.name.trim(),
+      email: formValues.email.trim(),
+      password: formValues.password.trim(),
+    };
+    postNewUser(newUser);
+  };
+  useEffect(() => {
+    schema.isValid(formValues).then((valid) => {
+      setDisabled(!valid);
+    });
+  }, [formValues]);
+console.log(users)
+  return (
+    <div className="container">
+      <header>
+        <h1>Users</h1>
+      </header>
 
-
-
-return (
-  <div>
-    <h1>Register</h1>
-
-    <Form
+      <Form
         values={formValues}
         change={inputChange}
         submit={formSubmit}
         disabled={disabled}
-        errors={errors}
+        errors={formErrors}
       />
-  </div>
 
-
-)
-
+    <Person details={users} />
+    </div>
+  );
 }

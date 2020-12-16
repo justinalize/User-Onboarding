@@ -1,23 +1,23 @@
 import React from 'react'
 
-function Person({ details }) {
+function Friend({ details }) {
   if (!details) {
     return <h3>Working fetching your friend&apos;s details...</h3>
   }
-
+  console.log(details)
   return (
-    <div>
-      <h2>{details.name}</h2>
+    <div className='friend container'>
+      <h2>{details.username}</h2>
+      <p>Name: {details.name}</p>
       <p>Email: {details.email}</p>
-      <p>Role: {details.password}</p>
-      
+     
 
       {
-        !!details.tos && !!details.tos.length &&
+        !!details.terms && !!details.terms.length &&
         <div>
-          Terms:
+         Terms of Service
           <ul>
-            {details.tos.map((like, idx) => <li key={idx}>{like}</li>)}
+            {details.terms.map((like, idx) => <li key={idx}>{like}</li>)}
           </ul>
         </div>
       }
@@ -25,4 +25,4 @@ function Person({ details }) {
   )
 }
 
-export default Person
+export default Friend
