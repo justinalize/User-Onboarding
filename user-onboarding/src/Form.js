@@ -5,7 +5,7 @@ export default function Form(props) {
   const { values, submit, change, disabled, errors } = props;
 
   const onSubmit = (event) => {
-    event.preventDevfault();
+    // event.preventDevfault();
     submit();
   };
 
@@ -75,7 +75,7 @@ export default function Form(props) {
           <br />
         </label>
       </div>
-      <button disabled={disabled}>submit</button>
+      <button id='submitBtn' disabled={disabled}>submit</button>
     </form>
   );
 }
